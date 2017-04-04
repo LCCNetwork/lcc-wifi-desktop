@@ -3,8 +3,8 @@
 // }
 
 window.onload = () => {
-  let loader = document.getElementsByClassName('wrapper-loader')[0]
-  // setTimeout(() => {
-  loader.style.visibility = 'hidden'
-  // }, 3000)
+  let loader = $('.wrapper-loader')
+  setTimeout(() => {
+    loader.fadeOut({duation: 200})
+  }, 1800)
 }
