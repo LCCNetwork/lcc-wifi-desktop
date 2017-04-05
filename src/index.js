@@ -1,5 +1,6 @@
 const $ = require('jquery')
 const fb = require('firebase')
+require('google-oauth2')
 const gAuthProvider = new fb.auth.GoogleAuthProvider()
 
 const fbConfig = {
@@ -17,13 +18,30 @@ fb.auth().onAuthStateChanged((user) => {
   console.log(user)
 })
 
-function onSignIn (googleUser) {
-  const credential = gAuthProvider.credential(googleUser.idToken)
+// Google OAuth Handlers
+function onSuccess (user) {
+    const credential = gAuthProvider.credential(user.idToken)
   fb.auth().signInWithCredential(credential).catch((err) => {
     alert('Login Error', err.message, [
       {text: 'OK'}
     ])
   })
+}
+
+function onFailure (err) {
+    console.error(err)
+}
+
+function renderButton () {
+    gapi.signin2.render('my-signin2', {
+        'scope': 'profile email',
+        'width': 240,
+        'height': 50,
+        'longtitle': true,
+        'theme': 'dark',
+        'onsuccess': onSuccess,
+        'onfailure': onFailure
+    })
 }
 
 window.onload = () => {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="google-signin-client_id" content="1038104580431-bakjtdg9bapemb51kif2cdm4fgs4paaf.apps.googleusercontent.com">
-    <meta name="google-signin-cookiepolicy" content="none">
+    <meta name="google-signin-cookiepolicy" content="single_host_origin">
     <meta name="google-signin-scope" content="profile email">
     <title>Title</title>
     <link rel="stylesheet" href="stylesheet.css" />
@@ -16,12 +16,12 @@
 
         <div class="wrapper-main">
             <p class="main-title">Login to LCC WiFi</p>
-            <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+            <div id="my-signin2"></div>
         </div>
     </div>
 
     <!--Load Scripts-->
-    <script src="../res/GoogleAPI.js" async defer></script>
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
     <script src="index.js"></script>
 </body>
 </html>
