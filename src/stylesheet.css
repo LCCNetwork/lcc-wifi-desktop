@@ -1,28 +1,23 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto');
 
 body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     margin: 0;
     padding: 0;
     border: 0;
 }
 
 .wrapper {
-    font-family: 'Roboto', 'sans-serif';
-}
-
-/*.wrapper-main {*/
-    /*min-width: 100%;*/
-    /*min-height: 100%;*/
-/*}*/
-
-.main-title  {
     position: absolute;
     width: 100%;
-    top: 45%;
-
-    font-size: 20px;
-    text-align: center;
-    margin: 0 auto;
+    height: 100%;
+    background-image: url(../res/images/background.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    font-family: 'Roboto', 'sans-serif';
 }
 
 .wrapper-loader {
@@ -33,13 +28,52 @@ body {
     height: 100%;
 }
 
+.wrapper-main {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.main-title {
+    color: white;
+    position: absolute;
+    width: 100%;
+    top: 42%;
+
+    font-family: 'Roboto', 'sans-serif';
+    font-size: 40px;
+    text-align: center;
+    text-shadow: 1px 1px 2px #000;
+    margin: 0 auto;
+}
+
+.main-signin-button {
+    background-image: url("../res/google_signin_buttons/web/1x/btn_google_signin_light_normal_web.png");
+
+    display: block;
+    position: relative;
+    width: 191px;
+    height: 49px;
+    margin-left: auto;
+    margin-right: auto;
+    top: 52%;
+
+    transition: background-image 0.1s ease-in;
+}
+
+.main-signin-button:hover {
+    background-image: url("../res/google_signin_buttons/web/1x/btn_google_signin_dark_focus_web.png");
+    cursor: pointer;
+}
+
 .loader {
     position: relative;
     top: 50%;
+
     width: 60px;
     height: 60px;
     background-color: #7289DA;
-    margin: 0 auto 0 auto;
+    margin: auto;
 
     -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
     animation: sk-rotateplane 1.2s infinite ease-in-out;
@@ -62,4 +96,65 @@ body {
             transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
             -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
         }
+}
+
+.wrapper-app {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    background-color: #23272A;
+}
+
+.wrapper-app-body {
+    font-family: 'Roboto', 'sans-serif';
+    color: white;
+}
+
+.wrapper-app-body p {
+    margin: 0;
+}
+
+.wrapper-app-data {
+
+}
+
+.app-title {
+    font-size: 52px;
+    padding-bottom: 20px;
+}
+
+.app-info-used, .app-info-remaining, .app-info-total {
+    padding: 4px 0 4px 0;
+}
+
+.app-data-display {
+    position: relative;
+    margin: 0 auto;
+    width: 400px;
+    height: 400px;
+}
+
+.app-data-label {
+    font-size: 60px;
+
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.app-data-label.top {
+    top: 33%;
+}
+
+.app-data-label.bottom {
+    top: 53%;
+}
+
+.wrapper-app-footer {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 15px;
 }

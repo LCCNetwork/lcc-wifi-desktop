@@ -62,4 +62,4 @@ typings/
 # Idea
 .idea
 
-credentials.json
+oauth2-config.js
