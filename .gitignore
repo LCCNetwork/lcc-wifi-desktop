@@ -63,3 +63,4 @@ typings/
 .idea
 
 oauth2-config.js
+apikey.js

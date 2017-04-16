@@ -1,9 +1,14 @@
 const {app, BrowserWindow} = require('electron')
 const electronGoogleOauth = require('electron-google-oauth')
 const authConfig = require('../oauth2-config')
+const path = require('path')
+
+global.state = {user: undefined, usage: undefined}
 
 app.on('ready', () => {
   let win = new BrowserWindow({
+    icon: path.join(__dirname, '..', 'assets', 'icon.png'),
+    title: 'LCC WiFi',
     width: 1200,
     height: 800,
     resizable: false
@@ -20,7 +25,7 @@ exports.openOauth = () => {
     'always-on-top': true,
     'standard-window': true,
     'auto-hide-menu-bar': true,
-    'node-integration': false
+    'node-integration': false,
   }
   const googleOauth = electronGoogleOauth(browserWindowParams)
 

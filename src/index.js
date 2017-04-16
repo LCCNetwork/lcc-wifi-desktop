@@ -1,16 +1,17 @@
 const $ = require('jquery')
 const fb = require('firebase')
+const fetch = require('node-fetch')
 const remote = require('electron').remote
 const remoteMain = require('electron').remote.require('./main')
-const {app, dialog, BrowserWindow} = require('electron').remote
 const gAuthProvider = new fb.auth.GoogleAuthProvider()
 const imagesLoaded = require('imagesloaded')
 const ProgressBar = require('progressbar.js')
 
+let remoteState = remote.getGlobal('state')
 let filename = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1)
 
 const fbConfig = {
-  apiKey: 'AIzaSyBgiv2CAsvosW3RFsS8SYv9JhVeYJLWRYo',
+  apiKey: require('../apikey').apikey,
   authDomain: 'lcc-wifi.firebaseapp.com',
   databaseURL: 'https://lcc-wifi.firebaseio.com',
   projectId: 'lcc-wifi',
@@ -20,42 +21,88 @@ const fbConfig = {
 
 fb.initializeApp(fbConfig)
 
+function timeout (time) {
+  return new Promise((resolve, reject) => {
+    setTimeout(reject, time, 'request timed out')
+  })
+}
+
 function openOauthWin () {
   remoteMain.openOauth()
   .then(userData => {
     const credential = gAuthProvider.credential(userData.id_token)
+
     fb.auth().signInWithCredential(credential)
-    .then((info) => {
-      remote.getCurrentWindow().loadURL(`file://${__dirname}/app.html`)
+    .then((user) => {
+      Promise.race([timeout(1000),
+        fetch('http://localhost:8080/auth',
+          {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: user.email
+            })
+          }
+        )
+      ]).then((res) => res.json()).then((resJson) => {
+        if (!resJson.auth) { return remote.dialog.showErrorBox('Usage Error', 'You are not authorized to use our WiFi service. If you believe that this may be a mistake, please contact an admin.') }
+
+        fetch(`http://localhost:8080/user/${user.uid}`, {method: 'GET', headers: { 'Accept': 'application/json' }})
+        .then(res => res.json()).then(resJson => {
+          remoteState.usage = resJson
+          remoteState.user = user
+          console.log(remoteState)
+          remote.getCurrentWindow().loadURL(`file://${__dirname}/app.html`)
+        })
+      }).catch((err) => {
+        fb.auth().signOut()
+        remoteState.user = undefined
+
+        console.log(err)
+        console.error('Connection to local LCC WiFi server timed out')
+        remote.dialog.showErrorBox('Authentication Error', 'Please make sure that you are connected to the LCC WiFi network.')
+      })
     })
     .catch((err) => {
+      fb.auth().signOut()
+      remoteState.user = undefined
+
       console.log(err)
-      dialog.showErrorBox('Authentication Error', 'Firebase Error:\n' + err.message)
+      remote.dialog.showErrorBox('Authentication Error', err.message)
     })
   })
   .catch(() => {})
 }
 
 function loadApp () {
+  console.log(remoteState)
+  $('.app-user-name').text(remoteState.user.displayName || remoteState.user.email || 'User')
+  $('.app-data-label.top').text(`${remoteState.usage.used / 1000} GB /`)
+  $('.app-data-label.bottom').text(`${remoteState.usage.total / 1000} GB`)
+
   let dataDisplay = new ProgressBar.Circle('.app-data-display', {
     strokeWidth: 8,
     easing: 'easeInOut',
-    duration: 1400,
+    duration: 1800,
     color: '#72CADA',
     trailColor: '#FFF',
     trailWidth: 8
   })
 
-  dataDisplay.animate(0.55)
+  dataDisplay.animate(remoteState.usage.used / remoteState.usage.total)
 }
 
 function loadIndex () {
+  $('.main-signin-button').bind('click', openOauthWin)
+
   let loader = $('.wrapper-loader')
   loader.fadeOut({duration: 500})
 }
 
 window.onload = () => {
-  console.log(filename)
   if (filename === 'index.html') {
     setTimeout(() => {
       imagesLoaded('body', loadIndex())

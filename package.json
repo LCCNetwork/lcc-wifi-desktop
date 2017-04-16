@@ -9,6 +9,7 @@
   "author": "CF12",
   "license": "MIT",
   "devDependencies": {
+    "electron-packager": "^8.6.0",
     "electron-prebuilt": "^1.4.13",
     "electron-reload": "^1.1.0",
     "standard": "^9.0.2"
@@ -19,6 +20,7 @@
     "firebase": "^3.7.5",
     "imagesloaded": "^4.1.1",
     "jquery": "^3.2.1",
+    "node-fetch": "^1.6.3",
     "phantomjs": "^2.1.7",
     "progressbar.js": "^1.0.1"
   }
