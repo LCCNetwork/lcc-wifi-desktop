@@ -11,10 +11,16 @@ app.on('ready', () => {
     title: 'LCC WiFi',
     width: 1200,
     height: 800,
-    resizable: false
+    minWidth: 700,
+    minHeight: 800,
+    resizable: true
   })
 
   win.loadURL(`file://${__dirname}/index.html`)
+})
+
+app.on('window-all-closed', () => {
+  app.quit()
 })
 
 exports.openOauth = () => {

@@ -1,10 +1,13 @@
 {
   "name": "lcc-wifi-desktop",
-  "version": "0.1.0",
+  "productName": "LCC WiFi",
+  "version": "1.0.0",
   "description": "Desktop application for LCC WiFi - Build on Electron",
-  "main": "src/main.js",
+  "main": "./src/main.js",
   "scripts": {
-    "start": "electron src/main.js"
+    "start": "electron src/main.js",
+    "build-win": "electron-packager . --asar=true --overwrite --platform=win32 --arch=ia32 --icon=assets/icon.ico --out=release-builds",
+    "build-linux": "electron-packager . --asar=true --overwrite --platform=linux --arch=x64 --icon=assets/icon.png --out=release-builds"
   },
   "author": "CF12",
   "license": "MIT",
@@ -21,7 +24,6 @@
     "imagesloaded": "^4.1.1",
     "jquery": "^3.2.1",
     "node-fetch": "^1.6.3",
-    "phantomjs": "^2.1.7",
     "progressbar.js": "^1.0.1"
   }
 }
