@@ -31,7 +31,7 @@ exports.openOauth = () => {
     'always-on-top': true,
     'standard-window': true,
     'auto-hide-menu-bar': true,
-    'node-integration': false,
+    'node-integration': false
   }
   const googleOauth = electronGoogleOauth(browserWindowParams)
 
