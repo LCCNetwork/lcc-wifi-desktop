@@ -33,59 +33,63 @@ function signOut () {
   remote.getCurrentWindow().loadURL(`file://${__dirname}/index.html`)
 }
 
-function loadData (user) {
-  user.getToken(true).then((token) => {
-    console.log(token)
-    Promise.race([timeout(1000),
-      fetch(`http://localhost:8080/auth`,
-        {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            token: token
-          })
-        }
-      )
-    ]).then((res) => res.json()).then((resJson) => {
-      if (!resJson.auth) { return remote.dialog.showErrorBox('Usage Error', 'You are not authorized to use our WiFi service. If you believe that this may be a mistake, please contact an admin.') }
+function resetUser () {
+  fb.auth().signOut()
+  remoteState.user = undefined
+  remoteState.token = undefined
+  remoteState.usage = undefined
+}
 
-      fetch(`http://localhost:8080/user/${user.uid}`, {method: 'GET', headers: { 'Accept': 'application/json' }})
-      .then(res => res.json()).then(resJson => {
-        remoteState.usage = resJson
-        remoteState.user = user
-        remote.getCurrentWindow().loadURL(`file://${__dirname}/app.html`)
-      })
-    }).catch((err) => {
-      fb.auth().signOut()
-      remoteState.user = undefined
+function loadData () {
+  let token = remoteState.token
 
-      console.log(err)
-      console.error('Connection to local LCC WiFi server timed out')
-      remote.dialog.showErrorBox('Authentication Error', 'Please make sure that you are connected to the LCC WiFi network.')
+  Promise.race([timeout(1000),
+    fetch(`http://localhost:8080/auth`,
+      {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: token
+        })
+      }
+    )
+  ]).then((res) => res.json()).then((resJson) => {
+    if (!resJson.auth) { return remote.dialog.showErrorBox('Usage Error', 'You are not authorized to use our WiFi service. If you believe that this may be a mistake, please contact an admin.') }
+
+    fetch(`http://localhost:8080/user/${token.uid}`, {method: 'GET', headers: { 'Accept': 'application/json' }})
+    .then(res => res.json()).then(resJson => {
+      remoteState.usage = resJson
+      remote.getCurrentWindow().loadURL(`file://${__dirname}/app.html`)
     })
   }).catch((err) => {
-    fb.auth().signOut()
-    remoteState.user = undefined
+    resetUser()
 
-    console.log(err)
-    remote.dialog.showErrorBox('Authentication Error', err.message)
+    console.error(err)
+    console.error('Connection to local LCC WiFi server timed out')
+    remote.dialog.showErrorBox('Authentication Error', 'Please make sure that you are connected to the LCC WiFi network.')
   })
 }
 
 function openOauthWin () {
-  remoteMain.openOauth().then(userData => {
+  remoteMain.openOauth().then((userData) => {
     const credential = gAuthProvider.credential(userData.id_token)
 
     fb.auth().signInWithCredential(credential).then((user) => {
-      loadData(user)
-    }).catch((err) => {
-      fb.auth().signOut()
-      remoteState.user = undefined
+      user.getToken(true).then((token) => {
+        remoteState.token = token
+        remoteState.user = user
+        loadData()
+      }).catch((err) => {
+        resetUser()
 
-      console.log(err)
+        console.error(err)
+        remote.dialog.showErrorBox('Authentication Error', err.message)
+      })
+    }).catch((err) => {
+      console.error(err)
       remote.dialog.showErrorBox('Authentication Error', err.message)
     })
   }).catch(() => {})
@@ -120,7 +124,7 @@ function loadIndex () {
 window.onload = () => {
   if (filename === 'index.html') {
     setTimeout(() => {
-      imagesLoaded('body', loadIndex())
+      imagesLoaded('body', loadIndex)
     }, 1200)
   } else if (filename === 'app.html') {
     loadApp()

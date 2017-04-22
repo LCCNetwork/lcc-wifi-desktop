@@ -3,7 +3,7 @@ const electronGoogleOauth = require('electron-google-oauth')
 const authConfig = require('../oauth2-config')
 const path = require('path')
 
-global.state = {user: undefined, usage: undefined}
+global.state = {user: undefined, token: undefined, usage: undefined}
 
 app.on('ready', () => {
   let win = new BrowserWindow({
